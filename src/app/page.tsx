@@ -1,98 +1,84 @@
-import Image from "next/image";
-import { ConnectButton } from "thirdweb/react";
-import thirdwebIcon from "@public/thirdweb.svg";
-import { client } from "./client";
+"use client";
+import { NextPage } from "next";
+import { client } from "@/app/client";
+import { useEffect, useState } from "react";
+import { defineChain, getContract, prepareContractCall, toWei } from "thirdweb";
+import { useSendTransaction } from "thirdweb/react";
 
-export default function Home() {
+const Home: NextPage = () => {
+  //Estado de la data para la transacción
+  const [amount, setAmount] = useState<string>("");
+  const [to, setTo] = useState<string>("");
+  //Hook para hacer la transacción
+  const { mutate: sendTransaction } = useSendTransaction();
+
+  //Contract tETH
+  const contract = getContract({
+    client,
+    chain: defineChain(84532),
+    address: "0x385E0Ba92AbFCb54a23D311FF3E8f0B614D0cb5a",
+  });
+
+  //Función para preparar los datos y enviar la transacción
+  const handleClick = () => {
+    const transaction = prepareContractCall({
+      contract,
+      method: "function transfer(address to, uint256 amount) returns (bool)",
+      params: [to, toWei(amount)],
+    });
+
+    console.log("handleClick Activated", to, amount);
+    sendTransaction(transaction);
+  };
+
+  //Actualiza el monto en el estado cada vez que se modifica el input
+  const handleChangeAmount = (e) => {
+    setAmount(e.target.value);
+  };
+  //Actualiza el destinatario en el estado cada vez que se modifica el input
+  const handleChangeTo = (e) => {
+    setTo(e.target.value);
+  };
+
+  //Envía por consola el valor de la data de la transacción cada vez que se modifica el estado
+  useEffect(() => {
+    console.log("Amount", typeof amount, amount);
+    console.log("To", typeof amount, to);
+  }, [amount, to]);
+
   return (
-    <main className="p-4 pb-10 min-h-[100vh] flex items-center justify-center container max-w-screen-lg mx-auto">
-      <div className="py-20">
-        <Header />
+    <main className="p-4 pb-10 min-h-[100vh] ">
+      <h1 className="text-center text-6xl	my-8">Bienvenido a ThirdPay</h1>
 
-        <div className="flex justify-center mb-20">
-          <ConnectButton
-            client={client}
-            appMetadata={{
-              name: "Example App",
-              url: "https://example.com",
-            }}
-          />
-        </div>
+      <div className="flex flex-col gap-2 w-[600px] m-auto border p-6 rounded">
+        <h2 className="text-4xl">Enviar tETH</h2>
+        <label htmlFor="amount">
+          Para transferir un Token coloque el monto de tETH a enviar
+        </label>
+        <input
+          name="amount"
+          onChange={handleChangeAmount}
+          type="number"
+          placeholder="Monto a enviar"
+          min={0}
+          className="border p-2"
+        />
 
-        <ThirdwebResources />
+        <label htmlFor="to">Escriba el destinatario</label>
+        <input
+          name="to"
+          onChange={handleChangeTo}
+          type="text"
+          placeholder="Destinatario"
+          className="border p-2"
+        />
+
+        <button onClick={handleClick} className="p-2 bg-blue-700 text-white">
+          Enviar
+        </button>
       </div>
     </main>
   );
-}
+};
 
-function Header() {
-  return (
-    <header className="flex flex-col items-center mb-20 md:mb-20">
-      <Image
-        src={thirdwebIcon}
-        alt=""
-        className="size-[150px] md:size-[150px]"
-        style={{
-          filter: "drop-shadow(0px 0px 24px #a726a9a8)",
-        }}
-      />
-
-      <h1 className="text-2xl md:text-6xl font-semibold md:font-bold tracking-tighter mb-6 text-zinc-100">
-        thirdweb SDK
-        <span className="text-zinc-300 inline-block mx-1"> + </span>
-        <span className="inline-block -skew-x-6 text-blue-500"> Next.js </span>
-      </h1>
-
-      <p className="text-zinc-300 text-base">
-        Read the{" "}
-        <code className="bg-zinc-800 text-zinc-300 px-2 rounded py-1 text-sm mx-1">
-          README.md
-        </code>{" "}
-        file to get started.
-      </p>
-    </header>
-  );
-}
-
-function ThirdwebResources() {
-  return (
-    <div className="grid gap-4 lg:grid-cols-3 justify-center">
-      <ArticleCard
-        title="thirdweb SDK Docs"
-        href="https://portal.thirdweb.com/typescript/v5"
-        description="thirdweb TypeScript SDK documentation"
-      />
-
-      <ArticleCard
-        title="Components and Hooks"
-        href="https://portal.thirdweb.com/typescript/v5/react"
-        description="Learn about the thirdweb React components and hooks in thirdweb SDK"
-      />
-
-      <ArticleCard
-        title="thirdweb Dashboard"
-        href="https://thirdweb.com/dashboard"
-        description="Deploy, configure, and manage your smart contracts from the dashboard."
-      />
-    </div>
-  );
-}
-
-function ArticleCard(props: {
-  title: string;
-  href: string;
-  description: string;
-}) {
-  return (
-    <a
-      href={props.href + "?utm_source=next-template"}
-      target="_blank"
-      className="flex flex-col border border-zinc-800 p-4 rounded-lg hover:bg-zinc-900 transition-colors hover:border-zinc-700"
-    >
-      <article>
-        <h2 className="text-lg font-semibold mb-2">{props.title}</h2>
-        <p className="text-sm text-zinc-400">{props.description}</p>
-      </article>
-    </a>
-  );
-}
+export default Home;
