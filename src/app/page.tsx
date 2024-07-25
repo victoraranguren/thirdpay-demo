@@ -32,11 +32,11 @@ const Home: NextPage = () => {
   };
 
   //Actualiza el monto en el estado cada vez que se modifica el input
-  const handleChangeAmount = (e) => {
+  const handleChangeAmount = (e: any) => {
     setAmount(e.target.value);
   };
   //Actualiza el destinatario en el estado cada vez que se modifica el input
-  const handleChangeTo = (e) => {
+  const handleChangeTo = (e: any) => {
     setTo(e.target.value);
   };
 
