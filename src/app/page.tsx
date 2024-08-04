@@ -4,6 +4,7 @@ import { client } from "@/app/client";
 import { useEffect, useState } from "react";
 import { defineChain, getContract, prepareContractCall, toWei } from "thirdweb";
 import { useSendTransaction } from "thirdweb/react";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   //Estado de la data para la transacción
@@ -50,32 +51,16 @@ const Home: NextPage = () => {
     <main className="p-4 pb-10 min-h-[100vh] ">
       <h1 className="text-center text-6xl	my-8">Bienvenido a ThirdPay</h1>
 
-      <div className="flex flex-col gap-2 w-[600px] m-auto border p-6 rounded">
-        <h2 className="text-4xl">Enviar tETH</h2>
-        <label htmlFor="amount">
-          Para transferir un Token coloque el monto de tETH a enviar
-        </label>
-        <input
-          name="amount"
-          onChange={handleChangeAmount}
-          type="number"
-          placeholder="Monto a enviar"
-          min={0}
-          className="border p-2"
-        />
-
-        <label htmlFor="to">Escriba el destinatario</label>
-        <input
-          name="to"
-          onChange={handleChangeTo}
-          type="text"
-          placeholder="Destinatario"
-          className="border p-2"
-        />
-
-        <button onClick={handleClick} className="p-2 bg-blue-700 text-white">
-          Enviar
-        </button>
+      <div className="flex flex-row justify-between">
+        <Link href="/send" className="inline-block m-auto border p-6 rounded">
+          <h2 className="text-2xl">Enviar tETH</h2>
+        </Link>
+        <Link href="/mint" className="inline-block m-auto border p-6 rounded">
+          <h2 className="text-2xl">Mintear tETH</h2>
+        </Link>
+        <Link href="/burn" className="inline-block m-auto border p-6 rounded">
+          <h2 className="text-2xl">Quemar tETH</h2>
+        </Link>
       </div>
     </main>
   );
